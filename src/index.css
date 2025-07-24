@@ -17,7 +17,7 @@ All colors MUST be HSL.
     --popover: 120 25% 97%;
     --popover-foreground: 120 15% 15%;
 
-    --primary: 120 35% 45%;
+    --primary: 120 25% 55%;
     --primary-foreground: 120 25% 98%;
 
     --secondary: 120 20% 90%;
@@ -34,12 +34,12 @@ All colors MUST be HSL.
 
     --border: 120 15% 85%;
     --input: 120 15% 85%;
-    --ring: 120 35% 45%;
+    --ring: 120 25% 55%;
 
     /* Custom app colors */
-    --app-green-light: 120 40% 85%;
-    --app-green: 120 35% 45%;
-    --app-green-dark: 120 40% 35%;
+    --app-green-light: 120 35% 85%;
+    --app-green: 120 25% 55%;
+    --app-green-dark: 120 30% 45%;
     --cart-orange: 25 85% 65%;
     --success-green: 140 50% 50%;
 

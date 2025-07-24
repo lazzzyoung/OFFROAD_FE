@@ -19,11 +19,9 @@ const Index = () => {
       <div className="p-6">
         <Card className="p-8 text-center mb-8">
           <div className="mb-6">
-            <img 
-              src={cartHeroImage} 
-              alt="Shopping Cart" 
-              className="w-32 h-32 mx-auto rounded-lg"
-            />
+            <div className="w-32 h-32 mx-auto rounded-lg bg-app-green-light flex items-center justify-center">
+              <ShoppingCart className="h-16 w-16 text-primary" />
+            </div>
           </div>
           <h3 className="text-xl font-semibold mb-2">스마트한 장보기 시작</h3>
           <p className="text-muted-foreground">

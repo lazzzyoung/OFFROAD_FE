@@ -23,6 +23,7 @@ interface DiscountItem {
 
 const MainStore = () => {
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
   
   const [cartItems, setCartItems] = useState<CartItem[]>([
     { id: "1", name: "양파", quantity: 1, price: 2000, location: "B구역" },
@@ -74,7 +75,7 @@ const MainStore = () => {
       </div>
 
       {/* Top Tabs and Content Area */}
-      <Tabs className="w-full">
+      <Tabs className="w-full" value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-2 bg-app-green-light rounded-none h-auto">
           <TabsTrigger value="discount" className="py-4 text-lg font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
             할인상품
@@ -191,79 +192,81 @@ const MainStore = () => {
             </>
           )}
         </TabsContent>
+
+        {/* Store Map Section - Only shown when no tab is active */}
+        {!activeTab && (
+          <div className="p-4">
+            <Card className="p-6 mb-6">
+              <h2 className="text-xl font-bold mb-4 text-center">매장 안내도</h2>
+              
+              {/* Placeholder for future SVG map */}
+              <div className="bg-gray-100 rounded-lg p-8 text-center mb-4">
+                <p className="text-muted-foreground">매장 안내도 영역</p>
+                <p className="text-sm text-muted-foreground">SVG 파일을 여기에 추가 예정</p>
+              </div>
+              
+              {/* Simplified Store Layout for reference */}
+              <div className="grid grid-cols-3 gap-2 mb-4">
+                <Card className="p-4 bg-app-green-light text-center">
+                  <div className="text-sm font-medium">과일</div>
+                  <div className="text-xs text-muted-foreground">A구역</div>
+                </Card>
+                <Card className="p-4 bg-app-green-light text-center">
+                  <div className="text-sm font-medium">채소</div>
+                  <div className="text-xs text-muted-foreground">B구역</div>
+                </Card>
+                <Card className="p-4 bg-app-green-light text-center">
+                  <div className="text-sm font-medium">정육</div>
+                  <div className="text-xs text-muted-foreground">C구역</div>
+                </Card>
+              </div>
+              
+              <div className="grid grid-cols-3 gap-2 mb-4">
+                <Card className="p-4 bg-app-green-light text-center">
+                  <div className="text-sm font-medium">수산</div>
+                  <div className="text-xs text-muted-foreground">D구역</div>
+                </Card>
+                <Card className="p-4 bg-secondary text-center">
+                  <div className="text-sm font-medium">계산대</div>
+                  <div className="text-xs text-muted-foreground">중앙</div>
+                </Card>
+                <Card className="p-4 bg-app-green-light text-center">
+                  <div className="text-sm font-medium">냉장</div>
+                  <div className="text-xs text-muted-foreground">E구역</div>
+                </Card>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-2">
+                <Card className="p-4 bg-app-green-light text-center">
+                  <div className="text-sm font-medium">생활용품</div>
+                  <div className="text-xs text-muted-foreground">F구역</div>
+                </Card>
+                <Card className="p-4 bg-app-green-light text-center">
+                  <div className="text-sm font-medium">가공식품</div>
+                  <div className="text-xs text-muted-foreground">G구역</div>
+                </Card>
+              </div>
+            </Card>
+          </div>
+        )}
       </Tabs>
 
-      {/* Store Map Section */}
-      <div className="p-4">
-        <Card className="p-6 mb-6">
-          <h2 className="text-xl font-bold mb-4 text-center">매장 안내도</h2>
-          
-          {/* Placeholder for future SVG map */}
-          <div className="bg-gray-100 rounded-lg p-8 text-center mb-4">
-            <p className="text-muted-foreground">매장 안내도 영역</p>
-            <p className="text-sm text-muted-foreground">SVG 파일을 여기에 추가 예정</p>
-          </div>
-          
-          {/* Simplified Store Layout for reference */}
-          <div className="grid grid-cols-3 gap-2 mb-4">
-            <Card className="p-4 bg-app-green-light text-center">
-              <div className="text-sm font-medium">과일</div>
-              <div className="text-xs text-muted-foreground">A구역</div>
-            </Card>
-            <Card className="p-4 bg-app-green-light text-center">
-              <div className="text-sm font-medium">채소</div>
-              <div className="text-xs text-muted-foreground">B구역</div>
-            </Card>
-            <Card className="p-4 bg-app-green-light text-center">
-              <div className="text-sm font-medium">정육</div>
-              <div className="text-xs text-muted-foreground">C구역</div>
-            </Card>
-          </div>
-          
-          <div className="grid grid-cols-3 gap-2 mb-4">
-            <Card className="p-4 bg-app-green-light text-center">
-              <div className="text-sm font-medium">수산</div>
-              <div className="text-xs text-muted-foreground">D구역</div>
-            </Card>
-            <Card className="p-4 bg-secondary text-center">
-              <div className="text-sm font-medium">계산대</div>
-              <div className="text-xs text-muted-foreground">중앙</div>
-            </Card>
-            <Card className="p-4 bg-app-green-light text-center">
-              <div className="text-sm font-medium">냉장</div>
-              <div className="text-xs text-muted-foreground">E구역</div>
-            </Card>
-          </div>
-          
-          <div className="grid grid-cols-2 gap-2">
-            <Card className="p-4 bg-app-green-light text-center">
-              <div className="text-sm font-medium">생활용품</div>
-              <div className="text-xs text-muted-foreground">F구역</div>
-            </Card>
-            <Card className="p-4 bg-app-green-light text-center">
-              <div className="text-sm font-medium">가공식품</div>
-              <div className="text-xs text-muted-foreground">G구역</div>
-            </Card>
-          </div>
-        </Card>
-      </div>
-
-      {/* Bottom Navigation */}
+      {/* Bottom Navigation - Stacked vertically */}
       <div className="fixed bottom-0 left-0 right-0 bg-primary text-primary-foreground">
-        <div className="grid grid-cols-2">
+        <div className="space-y-0">
           <Button
             onClick={() => navigate("/assistant")}
             variant="ghost"
-            className="py-4 text-primary-foreground hover:bg-primary/20 rounded-none h-auto flex-col gap-1"
+            className="w-full py-4 text-primary-foreground hover:bg-primary/20 rounded-none h-auto flex items-center justify-center gap-2 border-b border-primary-foreground/20"
           >
             <Mic className="h-5 w-5" />
-            <span className="text-sm">마트 도우미</span>
+            <span className="text-sm">마트 도우미에게 도움을 요청하세요</span>
           </Button>
           
           <Button
             onClick={() => navigate("/search")}
             variant="ghost"
-            className="py-4 text-primary-foreground hover:bg-primary/20 rounded-none h-auto flex-col gap-1"
+            className="w-full py-4 text-primary-foreground hover:bg-primary/20 rounded-none h-auto flex items-center justify-center gap-2"
           >
             <Search className="h-5 w-5" />
             <span className="text-sm">상품 검색</span>
@@ -272,7 +275,7 @@ const MainStore = () => {
       </div>
 
       {/* Bottom padding to account for fixed navigation */}
-      <div className="h-20"></div>
+      <div className="h-32"></div>
     </div>
   );
 };

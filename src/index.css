@@ -36,10 +36,10 @@ All colors MUST be HSL.
     --input: 120 15% 85%;
     --ring: 120 35% 45%;
 
-    /* Custom app colors - 부드러운 파스텔 초록색 계열 */
-    --app-green-light: 120 25% 88%;
-    --app-green: 120 30% 65%;
-    --app-green-dark: 120 35% 50%;
+    /* Custom app colors */
+    --app-green-light: 120 40% 85%;
+    --app-green: 120 35% 45%;
+    --app-green-dark: 120 40% 35%;
     --cart-orange: 25 85% 65%;
     --success-green: 140 50% 50%;
 

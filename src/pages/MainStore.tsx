@@ -4,6 +4,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, ShoppingCart, Search, Mic, Minus, Plus, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+// import { ReactComponent as MapSvg } from '/src/assets/map.svg?react';
+import MapSvg from '/src/assets/map.svg?react';
+// import StoreMap from "@/components/ui/StoreMap";
+import mapImage from '/src/assets/map.svg';
 
 interface CartItem {
   id: string;
@@ -200,11 +204,21 @@ const MainStore = () => {
               <h2 className="text-xl font-bold mb-4 text-center">매장 안내도</h2>
               
               {/* Placeholder for future SVG map */}
-              <div className="bg-gray-100 rounded-lg p-8 text-center mb-4">
+              {/* <div className="bg-gray-100 rounded-lg p-8 text-center mb-4">
                 <p className="text-muted-foreground">매장 안내도 영역</p>
                 <p className="text-sm text-muted-foreground">SVG 파일을 여기에 추가 예정</p>
-              </div>
+              </div> */}
               
+              {/* <img src={mapImage} alt="map" /> */}
+              <div className="relative w-full">
+                <MapSvg className="w-full h-auto" />
+                {/* 마커 예시 */}
+                <div
+                  className="absolute bg-red-500 rounded-full w-4 h-4"
+                  style={{ top: '120px', left: '220px' }}
+                />
+              </div>
+
               {/* Simplified Store Layout for reference */}
               <div className="grid grid-cols-3 gap-2 mb-4">
                 <Card className="p-4 bg-app-green-light text-center">

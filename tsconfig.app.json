@@ -1,3 +1,7 @@
+/// <reference types="vite/client" />
+/// <reference types="vite-plugin-svgr/client" /> //
+
+
 {
   "compilerOptions": {
     "target": "ES2020",

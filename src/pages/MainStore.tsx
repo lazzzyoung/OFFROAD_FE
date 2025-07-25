@@ -1,13 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, ShoppingCart, Search, Mic, Minus, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, ShoppingCart, Search, Mic, Minus, Plus, Trash2, Home } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-// import { ReactComponent as MapSvg } from '/src/assets/map.svg?react';
 import MapSvg from '/src/assets/map.svg?react';
-// import StoreMap from "@/components/ui/StoreMap";
-import mapImage from '/src/assets/map.svg';
+import MapMarker from "@/components/ui/MapMarker";
+
 
 interface CartItem {
   id: string;
@@ -65,6 +64,7 @@ const MainStore = () => {
       {/* Header */}
       <div className="sticky top-0 bg-primary text-primary-foreground p-4">
         <div className="flex items-center justify-between">
+          {/* Left: Back Button */}
           <Button
             variant="ghost"
             size="sm"
@@ -73,16 +73,25 @@ const MainStore = () => {
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="text-lg font-bold">장보러 가는 길, OFF ROAD</h1>
-          <div className="w-10" />
+          {/* Center: Title */}
+          <h1 className="text-lg font-bold flex-1 text-center">장보러 가는 길, OFF ROAD</h1>
+          {/* Right: Home Button */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setActiveTab(undefined)}
+            className="text-primary-foreground hover:bg-primary/20"
+          >
+            <Home className="h-5 w-5" />
+          </Button>
         </div>
       </div>
 
       {/* Top Tabs and Content Area */}
-      <Tabs className="w-full" value={activeTab} onValueChange={setActiveTab}>
+      <Tabs key={activeTab === undefined ? 'default' : activeTab} className="w-full" value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-2 bg-app-green-light rounded-none h-auto">
           <TabsTrigger value="discount" className="py-4 text-lg font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-            할인상품
+            % 할인상품
           </TabsTrigger>
           <TabsTrigger value="cart" className="py-4 text-lg font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
             <ShoppingCart className="h-5 w-5 mr-2" />
@@ -204,69 +213,24 @@ const MainStore = () => {
               <h2 className="text-xl font-bold mb-4 text-center">매장 안내도</h2>
               
               {/* Placeholder for future SVG map */}
-              {/* <div className="bg-gray-100 rounded-lg p-8 text-center mb-4">
-                <p className="text-muted-foreground">매장 안내도 영역</p>
-                <p className="text-sm text-muted-foreground">SVG 파일을 여기에 추가 예정</p>
-              </div> */}
               
-              {/* <img src={mapImage} alt="map" /> */}
               <div className="relative w-full">
                 <MapSvg className="w-full h-auto" />
                 {/* 마커 예시 */}
-                <div
-                  className="absolute bg-red-500 rounded-full w-4 h-4"
-                  style={{ top: '120px', left: '220px' }}
-                />
+                {/* 아래 location에 측정 값 입력해주면 될듯 */}
+                <MapMarker location="IN" />
+                {/* IN (입구 기준점) : { top: "12%", left: "37.3%" } */}
+                
               </div>
-
-              {/* Simplified Store Layout for reference */}
-              <div className="grid grid-cols-3 gap-2 mb-4">
-                <Card className="p-4 bg-app-green-light text-center">
-                  <div className="text-sm font-medium">과일</div>
-                  <div className="text-xs text-muted-foreground">A구역</div>
-                </Card>
-                <Card className="p-4 bg-app-green-light text-center">
-                  <div className="text-sm font-medium">채소</div>
-                  <div className="text-xs text-muted-foreground">B구역</div>
-                </Card>
-                <Card className="p-4 bg-app-green-light text-center">
-                  <div className="text-sm font-medium">정육</div>
-                  <div className="text-xs text-muted-foreground">C구역</div>
-                </Card>
-              </div>
+                
               
-              <div className="grid grid-cols-3 gap-2 mb-4">
-                <Card className="p-4 bg-app-green-light text-center">
-                  <div className="text-sm font-medium">수산</div>
-                  <div className="text-xs text-muted-foreground">D구역</div>
-                </Card>
-                <Card className="p-4 bg-secondary text-center">
-                  <div className="text-sm font-medium">계산대</div>
-                  <div className="text-xs text-muted-foreground">중앙</div>
-                </Card>
-                <Card className="p-4 bg-app-green-light text-center">
-                  <div className="text-sm font-medium">냉장</div>
-                  <div className="text-xs text-muted-foreground">E구역</div>
-                </Card>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-2">
-                <Card className="p-4 bg-app-green-light text-center">
-                  <div className="text-sm font-medium">생활용품</div>
-                  <div className="text-xs text-muted-foreground">F구역</div>
-                </Card>
-                <Card className="p-4 bg-app-green-light text-center">
-                  <div className="text-sm font-medium">가공식품</div>
-                  <div className="text-xs text-muted-foreground">G구역</div>
-                </Card>
-              </div>
             </Card>
           </div>
         )}
       </Tabs>
 
       {/* Bottom Navigation - Stacked vertically */}
-      <div className="fixed bottom-0 left-0 right-0 bg-primary text-primary-foreground">
+      {/* <div className="fixed bottom-0 left-0 right-0 bg-primary text-primary-foreground">
         <div className="space-y-0">
           <Button
             onClick={() => navigate("/assistant")}
@@ -276,7 +240,7 @@ const MainStore = () => {
             <Mic className="h-5 w-5" />
             <span className="text-sm">마트 도우미에게 도움을 요청하세요</span>
           </Button>
-          
+          <div className="h-0.5 w-full bg-neutral-100" />
           <Button
             onClick={() => navigate("/search")}
             variant="ghost"
@@ -286,7 +250,27 @@ const MainStore = () => {
             <span className="text-sm">상품 검색</span>
           </Button>
         </div>
+      </div> */}
+
+      <div className="fixed bottom-4 left-4 right-4">
+          <Button 
+            className="w-full py-4 text-lg shadow-lg"
+            onClick={() => navigate("/assistant")}
+          >
+            <Mic className="h-6 w-6 mr-2" />
+            마트 도우미에게 도움을 요청해보세요
+          </Button>
       </div>
+
+      {/* <div className="fixed bottom-12left-4 right-4">
+          <Button 
+            className="w-full py-4 text-lg shadow-lg"
+            onClick={() => navigate("/search")}
+          >
+            <Search className="h-5 w-5" />
+            상품 검색
+          </Button>
+      </div> */}
 
       {/* Bottom padding to account for fixed navigation */}
       <div className="h-32"></div>

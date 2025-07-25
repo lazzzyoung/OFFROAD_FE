@@ -139,16 +139,8 @@ const Assistant = () => {
           </Card>
         )}
 
-        {/* Bottom Help Button */}
-        <div className="fixed bottom-4 left-4 right-4">
-          <Button 
-            className="w-full py-4 text-lg shadow-lg"
-            onClick={() => setShowResponse(false)}
-          >
-            <Mic className="h-6 w-6 mr-2" />
-            AI 어시스턴트에게 도움을 요청하세요
-          </Button>
-        </div>
+        
+        
       </div>
     </div>
   );

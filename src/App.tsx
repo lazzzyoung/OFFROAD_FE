@@ -6,7 +6,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import MainStore from "./pages/MainStore";
 import Assistant from "./pages/Assistant";
-import Cart from "./pages/Cart";
 import Search from "./pages/Search";
 import NotFound from "./pages/NotFound";
 
@@ -22,7 +21,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/store" element={<MainStore />} />
           <Route path="/assistant" element={<Assistant />} />
-          <Route path="/cart" element={<Cart />} />
+      
           <Route path="/search" element={<Search />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

@@ -40,7 +40,7 @@ const MainStore = () => {
   
   const fetchCartItems = async () => {
     try {
-      const response = await axios.get("http://13.50.237.191:3000/product/cart");
+      const response = await axios.get("https://offroad.kro.kr/product/cart");
       const data = response.data.map((item: any) => ({
         id: item._id,
         name: item.name,
@@ -261,7 +261,7 @@ const MainStore = () => {
                   className="w-full mb-4"
                   onClick={async () => {
                     try {
-                      await axios.post("http://13.50.237.191:3000/product/cart/clear");
+                      await axios.post("https://offroad.kro.kr/product/cart/clear");
                       setCartItems([]); // 프론트에서도 장바구니 비움
                     } catch (err) {
                       console.error("장바구니 초기화 실패", err);
@@ -303,7 +303,7 @@ const MainStore = () => {
                 <MapSvg className="w-full h-auto" />
                 {/* 마커 예시 */}
                 {/* 아래 location에 측정 값 입력해주면 될듯 */}
-                <MapMarker location="IN" />
+                <MapMarker location="B2" />
                 <MapMarker location={location} />
                 {/* IN (입구 기준점) : { top: "12%", left: "37.3%" } */}
                 

@@ -24,7 +24,7 @@ const Search = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch("http://13.50.237.191:3000/product");
+        const response = await fetch("https://offroad.kro.kr/product");
         const data = await response.json();
         setProducts(data);
         setSearchResults(data);
@@ -44,7 +44,7 @@ const Search = () => {
 
     try {
       const response = await fetch(
-        `http://13.50.237.191:3000/product/search?q=${encodeURIComponent(searchQuery)}`
+        `https://offroad.kro.kr/product/search?q=${encodeURIComponent(searchQuery)}`
       );
       const data = await response.json();
       setSearchResults(data);
@@ -61,7 +61,7 @@ const Search = () => {
 
   const handleAddToCart = async (productId: string) => {
     try {
-      const response = await fetch(`http://13.50.237.191:3000/product/cart/add/${productId}`, {
+      const response = await fetch(`https://offroad.kro.kr/product/cart/add/${productId}`, {
         method: "POST",
       });
 
@@ -90,11 +90,11 @@ const Search = () => {
   const handleLocationClick = async (productId: string) => {
     try {
       // Step 1: 해당 product의 location 받아오기
-      const locRes = await axios.get(`http://13.50.237.191:3000/product/location/${productId}`);
+      const locRes = await axios.get(`https://offroad.kro.kr/product/location/${productId}`);
       const location = locRes.data.location;
   
       // // Step 2: 해당 location 기준으로 상품들 불러오기
-      // const prodRes = await axios.get(`http://13.50.237.191:3000/product/location/${location}`);
+      // const prodRes = await axios.get(`https://offroad.kro.kr/product/location/${location}`);
       // const productsAtLocation = prodRes.data;
   
       // Step 3: MainStore로 이동하면서 state 전달

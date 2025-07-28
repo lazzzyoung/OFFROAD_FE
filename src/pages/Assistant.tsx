@@ -38,7 +38,7 @@ const Assistant = () => {
     setResponseText("");
 
     try {
-      const res = await fetch("http://13.50.237.191:3000/assistant", {
+      const res = await fetch("https://offroad.kro.kr/assistant", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

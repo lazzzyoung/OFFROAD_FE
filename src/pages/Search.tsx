@@ -4,6 +4,7 @@ import { ArrowLeft, Search as SearchIcon, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import axios from "axios";
 
 interface Product {
   _id: string;
@@ -11,6 +12,7 @@ interface Product {
   location: string;
   category: string;
   price: number;
+  status?: string; // in_cart 여부 확인용
 }
 
 const Search = () => {
@@ -19,14 +21,13 @@ const Search = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [searchResults, setSearchResults] = useState<Product[]>([]);
 
-  // 🔻 최초 전체 상품 불러오기
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch("http://localhost:3000/product");
+        const response = await fetch("http://13.50.237.191:3000/product");
         const data = await response.json();
         setProducts(data);
-        console.log("전체 상품 불러오기 성공", data);
+        setSearchResults(data);
       } catch (error) {
         console.error("전체 상품 불러오기 실패", error);
       }
@@ -35,16 +36,15 @@ const Search = () => {
     fetchProducts();
   }, []);
 
-  // 🔍 검색 API 호출
   const handleSearch = async () => {
     if (!searchQuery.trim()) {
-      setSearchResults([]);
+      setSearchResults(products);
       return;
     }
 
     try {
       const response = await fetch(
-        `http://localhost:3000/product/search?q=${encodeURIComponent(searchQuery)}`
+        `http://13.50.237.191:3000/product/search?q=${encodeURIComponent(searchQuery)}`
       );
       const data = await response.json();
       setSearchResults(data);
@@ -59,13 +59,51 @@ const Search = () => {
     }
   };
 
-  // 🔘 빠른 카테고리 클릭 시 프론트에서 필터링
+  const handleAddToCart = async (productId: string) => {
+    try {
+      const response = await fetch(`http://13.50.237.191:3000/product/cart/add/${productId}`, {
+        method: "POST",
+      });
+
+      if (response.ok) {
+        const updated = searchResults.map((product) =>
+          product._id === productId ? { ...product, status: "in_cart" } : product
+        );
+        setSearchResults(updated);
+        alert("장바구니에 담겼어요!");
+      } else {
+        const data = await response.json();
+        alert(data.message || "장바구니 담기에 실패했습니다.");
+      }
+    } catch (err) {
+      console.error("장바구니 추가 실패", err);
+      alert("서버 오류가 발생했어요.");
+    }
+  };
+
   const handleCategoryClick = (category: string) => {
     setSearchQuery(category);
     const results = products.filter((product) => product.category === category);
     setSearchResults(results);
   };
 
+  const handleLocationClick = async (productId: string) => {
+    try {
+      // Step 1: 해당 product의 location 받아오기
+      const locRes = await axios.get(`http://13.50.237.191:3000/product/location/${productId}`);
+      const location = locRes.data.location;
+  
+      // // Step 2: 해당 location 기준으로 상품들 불러오기
+      // const prodRes = await axios.get(`http://13.50.237.191:3000/product/location/${location}`);
+      // const productsAtLocation = prodRes.data;
+  
+      // Step 3: MainStore로 이동하면서 state 전달
+      navigate("/store", { state: { location } });
+    } catch (err) {
+      console.error("위치 기반 상품 불러오기 실패", err);
+    }
+  };
+  
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -105,23 +143,18 @@ const Search = () => {
         <Card className="p-4 mb-6">
           <h3 className="font-semibold mb-3">빠른 카테고리 검색</h3>
           <div className="grid grid-cols-2 gap-2">
-            {["과일",
-              "야채",
-              "고기/육류",
-              "가공식품",
-              "냉동식품",
-              "조미료/소스",
-              "과자/스낵",
-              "음료"].map((category) => (
-              <Button
-                key={category}
-                variant="outline"
-                className="py-3"
-                onClick={() => handleCategoryClick(category)}
-              >
-                {category}
-              </Button>
-            ))}
+            {["과일", "야채", "고기/육류", "가공식품", "냉동식품", "조미료/소스", "과자/스낵", "음료"].map(
+              (category) => (
+                <Button
+                  key={category}
+                  variant="outline"
+                  className="py-3"
+                  onClick={() => handleCategoryClick(category)}
+                >
+                  {category}
+                </Button>
+              )
+            )}
           </div>
         </Card>
 
@@ -148,13 +181,22 @@ const Search = () => {
                   </div>
 
                   <div className="flex flex-col gap-2">
-                    <Button size="sm" className="whitespace-nowrap">
-                      장바구니 담기
+                    <Button
+                      size="sm"
+                      className="whitespace-nowrap"
+                      onClick={
+                        product.status === "in_cart"
+                          ? () => navigate("/store", { state: { openTab: "cart" } })
+                          : () => handleAddToCart(product._id)
+                      }
+                      variant={product.status === "in_cart" ? "secondary" : "default"}
+                    >
+                      {product.status === "in_cart" ? "장바구니 가기" : "장바구니 담기"}
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => navigate("/store")}
+                      onClick={() =>  handleLocationClick(product._id)}
                     >
                       위치 보기
                     </Button>

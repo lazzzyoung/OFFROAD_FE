@@ -14,14 +14,14 @@ const Assistant = () => {
   const [checkedItems, setCheckedItems] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const sampleIngredients = [
-    "양파 1개",
-    "당근 1개",
-    "감자 2개",
-    "돼지고기 200g",
-    "카레가루 1팩",
-    "우유 200ml",
-  ];
+  // const sampleIngredients = [
+  //   "양파 1개",
+  //   "당근 1개",
+  //   "감자 2개",
+  //   "돼지고기 200g",
+  //   "카레가루 1팩",
+  //   "우유 200ml",
+  // ];
 
   const sampleQuestions = [
     "김치찌개 레시피 알려줘",
@@ -38,7 +38,7 @@ const Assistant = () => {
     setResponseText("");
 
     try {
-      const res = await fetch("http://localhost:3000/assistant", {
+      const res = await fetch("http://13.50.237.191:3000/assistant", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -149,10 +149,10 @@ const Assistant = () => {
 
             {/* 예시 재료 보여주기 */}
             <p className="text-sm text-muted-foreground mb-2">
-              아래 재료들을 장바구니에 담아볼까요?
+              이제 장 보러 가볼까요 ?
             </p>
 
-            <div className="space-y-3">
+            {/* <div className="space-y-3">
               {sampleIngredients.map((ingredient, index) => (
                 <div key={index} className="flex items-center space-x-2">
                   <Checkbox
@@ -172,7 +172,7 @@ const Assistant = () => {
               disabled={checkedItems.length === 0}
             >
               선택한 재료 장바구니에 담기 ({checkedItems.length}개)
-            </Button>
+            </Button> */}
           </Card>
         )}
       </div>

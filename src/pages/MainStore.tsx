@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, ShoppingCart, Search, Mic, Minus, Plus, Trash2, Home } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useEffect, useState } from 'react'; 
 import MapSvg from '/src/assets/map.svg?react';
 import MapMarker from "@/components/ui/MapMarker";
@@ -32,10 +33,14 @@ const MainStore = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   // const [products, setProducts] = useState<CartItem[]>([]);
 
+  const locationHook = useLocation();
+  const locationState = locationHook.state as {location?: string;};
+
+  const [location, setLocation] = useState(locationState?.location || "");
   
   const fetchCartItems = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/product/cart");
+      const response = await axios.get("http://13.50.237.191:3000/product/cart");
       const data = response.data.map((item: any) => ({
         id: item._id,
         name: item.name,
@@ -55,6 +60,12 @@ const MainStore = () => {
       fetchCartItems();
     }
   };
+
+  useEffect(() => {
+    if (!location) {
+      // fallback 처리: 전체 상품 다시 불러오거나 에러 메시지
+    }
+  }, []);
   
 
     // ✅ 장바구니에 상품 추가
@@ -250,7 +261,7 @@ const MainStore = () => {
                   className="w-full mb-4"
                   onClick={async () => {
                     try {
-                      await axios.post("http://localhost:3000/product/cart/clear");
+                      await axios.post("http://13.50.237.191:3000/product/cart/clear");
                       setCartItems([]); // 프론트에서도 장바구니 비움
                     } catch (err) {
                       console.error("장바구니 초기화 실패", err);
@@ -293,6 +304,7 @@ const MainStore = () => {
                 {/* 마커 예시 */}
                 {/* 아래 location에 측정 값 입력해주면 될듯 */}
                 <MapMarker location="IN" />
+                <MapMarker location={location} />
                 {/* IN (입구 기준점) : { top: "12%", left: "37.3%" } */}
                 
               </div>
@@ -303,6 +315,15 @@ const MainStore = () => {
         )}
       </Tabs>
 
+      <Button
+              onClick={() => navigate("/search")}
+              variant="secondary"
+              className="w-full py-5 text-lg font-medium"
+              size="lg"
+            >
+              <Search className="h-6 w-6 mr-3" />
+              상품 검색
+            </Button>
       
 
       <div className="fixed bottom-4 left-4 right-4">
@@ -320,7 +341,7 @@ const MainStore = () => {
             className="w-full py-4 text-lg shadow-lg"
             onClick={() => navigate("/search")}
           >
-            <Search className="h-5 w-5" />
+            <Search className="h-0 w-5" />
             상품 검색
           </Button>
       </div> */}

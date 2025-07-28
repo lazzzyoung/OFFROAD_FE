@@ -51,7 +51,7 @@ const Index = () => {
               마트 도우미
             </Button>
 
-            <Button
+            {/* <Button
               onClick={() => navigate("/cart")}
               variant="secondary" 
               className="w-full py-5 text-lg font-medium"
@@ -59,7 +59,7 @@ const Index = () => {
             >
               <ShoppingCart className="h-6 w-6 mr-3" />
               장바구니
-            </Button>
+            </Button> */}
 
             <Button
               onClick={() => navigate("/search")}

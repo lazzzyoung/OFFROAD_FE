@@ -10,27 +10,51 @@ const Assistant = () => {
   const navigate = useNavigate();
   const [question, setQuestion] = useState("");
   const [showResponse, setShowResponse] = useState(false);
+  const [responseText, setResponseText] = useState("");
   const [checkedItems, setCheckedItems] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const sampleIngredients = [
     "양파 1개",
-    "당근 1개", 
+    "당근 1개",
     "감자 2개",
     "돼지고기 200g",
     "카레가루 1팩",
-    "우유 200ml"
+    "우유 200ml",
   ];
 
   const sampleQuestions = [
     "김치찌개 레시피 알려줘",
     "파스타 재료 뭐뭐 있어?",
     "간단한 아침 메뉴 추천해줘",
-    "다이어트 식단 도와줘"
+    "다이어트 식단 도와줘",
   ];
 
-  const handleSubmit = () => {
-    if (question.trim()) {
+  const handleSubmit = async () => {
+    if (!question.trim()) return;
+
+    setLoading(true);
+    setShowResponse(false);
+    setResponseText("");
+
+    try {
+      const res = await fetch("http://localhost:3000/assistant", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ question }),
+      });
+
+      const data = await res.json();
+      setResponseText(data.result);
       setShowResponse(true);
+    } catch (err) {
+      console.error("AI 응답 실패", err);
+      setResponseText("AI 응답에 실패했어요.");
+      setShowResponse(true);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -38,7 +62,7 @@ const Assistant = () => {
     if (checked) {
       setCheckedItems([...checkedItems, item]);
     } else {
-      setCheckedItems(checkedItems.filter(i => i !== item));
+      setCheckedItems(checkedItems.filter((i) => i !== item));
     }
   };
 
@@ -70,17 +94,20 @@ const Assistant = () => {
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
               className="flex-1 text-base py-3"
-              onKeyPress={(e) => e.key === 'Enter' && handleSubmit()}
+              onKeyPress={(e) => e.key === "Enter" && handleSubmit()}
             />
             <Button onClick={handleSubmit} size="lg">
               <Send className="h-5 w-5" />
             </Button>
           </div>
-          
-          <Button 
-            variant="outline" 
+
+          <Button
+            variant="outline"
             className="w-full mt-3 py-3"
-            onClick={() => setShowResponse(true)}
+            onClick={() => {
+              setQuestion("마이크 기능은 아직 구현되지 않았어요!");
+              setShowResponse(true);
+            }}
           >
             <Mic className="h-5 w-5 mr-2" />
             음성으로 질문하기
@@ -98,7 +125,7 @@ const Assistant = () => {
                 className="justify-start text-left py-3 h-auto"
                 onClick={() => {
                   setQuestion(q);
-                  setShowResponse(true);
+                  handleSubmit();
                 }}
               >
                 {q}
@@ -107,20 +134,30 @@ const Assistant = () => {
           </div>
         </Card>
 
-        {/* Response */}
-        {showResponse && (
+        {/* Loading */}
+        {loading && (
           <Card className="p-4">
-            <h3 className="font-semibold mb-3">카레 만들기 재료</h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              필요한 재료들을 체크해보세요. 장바구니에 담을 수 있어요!
+            <p className="text-sm text-muted-foreground">AI가 생각 중이에요... 🤔</p>
+          </Card>
+        )}
+
+        {/* AI Response */}
+        {showResponse && !loading && (
+          <Card className="p-4">
+            <h3 className="font-semibold mb-3">AI 응답</h3>
+            <p className="text-base whitespace-pre-wrap mb-4">{responseText}</p>
+
+            {/* 예시 재료 보여주기 */}
+            <p className="text-sm text-muted-foreground mb-2">
+              아래 재료들을 장바구니에 담아볼까요?
             </p>
-            
+
             <div className="space-y-3">
               {sampleIngredients.map((ingredient, index) => (
                 <div key={index} className="flex items-center space-x-2">
                   <Checkbox
                     checked={checkedItems.includes(ingredient)}
-                    onCheckedChange={(checked) => 
+                    onCheckedChange={(checked) =>
                       handleCheckboxChange(ingredient, checked as boolean)
                     }
                   />
@@ -129,7 +166,7 @@ const Assistant = () => {
               ))}
             </div>
 
-            <Button 
+            <Button
               className="w-full mt-4 py-3"
               onClick={() => navigate("/cart")}
               disabled={checkedItems.length === 0}
@@ -138,9 +175,6 @@ const Assistant = () => {
             </Button>
           </Card>
         )}
-
-        
-        
       </div>
     </div>
   );

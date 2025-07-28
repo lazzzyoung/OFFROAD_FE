@@ -15,7 +15,7 @@ interface CartItem {
 const Cart = () => {
   const navigate = useNavigate();
   const [cartItems, setCartItems] = useState<CartItem[]>([
-    { id: "1", name: "양파", quantity: 1, price: 2000, location: "B구역" },
+    { id: "1", name: "양파", quantity: 1, price: 2000, location: "A구역" },
     { id: "2", name: "당근", quantity: 1, price: 1500, location: "B구역" },
     { id: "3", name: "감자", quantity: 2, price: 3000, location: "B구역" },
     { id: "4", name: "돼지고기", quantity: 1, price: 8000, location: "C구역" },

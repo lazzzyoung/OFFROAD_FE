@@ -3,9 +3,11 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, ShoppingCart, Search, Mic, Minus, Plus, Trash2, Home } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from 'react'; 
 import MapSvg from '/src/assets/map.svg?react';
 import MapMarker from "@/components/ui/MapMarker";
+
+import axios from "axios";
 
 
 interface CartItem {
@@ -27,15 +29,71 @@ interface DiscountItem {
 const MainStore = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  // const [products, setProducts] = useState<CartItem[]>([]);
+
   
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    { id: "1", name: "양파", quantity: 1, price: 2000, location: "B구역" },
-    { id: "2", name: "당근", quantity: 1, price: 1500, location: "B구역" },
-    { id: "3", name: "감자", quantity: 2, price: 3000, location: "B구역" },
-    { id: "4", name: "돼지고기", quantity: 1, price: 8000, location: "C구역" },
-    { id: "5", name: "카레가루", quantity: 1, price: 2500, location: "G구역" },
-    { id: "6", name: "우유", quantity: 1, price: 2800, location: "E구역" },
-  ]);
+  const fetchCartItems = async () => {
+    try {
+      const response = await axios.get("http://localhost:3000/product/cart");
+      const data = response.data.map((item: any) => ({
+        id: item._id,
+        name: item.name,
+        quantity: 1,
+        price: item.price,
+        location: item.location,
+      }));
+      setCartItems(data);
+    } catch (err) {
+      console.error("장바구니 항목 불러오기 실패:", err);
+    }
+  };
+  
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    if (tab === "cart") {
+      fetchCartItems();
+    }
+  };
+  
+
+    // ✅ 장바구니에 상품 추가
+    const addToCart = (product: any) => {
+      setCartItems(prev => {
+        const exists = prev.find(item => item.id === product._id);
+        if (exists) {
+          return prev.map(item =>
+            item.id === product._id
+              ? { ...item, quantity: item.quantity + 1 }
+              : item
+          );
+        } else {
+          return [
+            ...prev,
+            {
+              id: product._id,
+              name: product.name,
+              quantity: 1,
+              price: product.price,
+              location: product.location,
+            },
+          ];
+        }
+      });
+    };
+  
+
+  
+  
+  
+  // const [cartItems, setCartItems] = useState<CartItem[]>([
+  //   { id: "1", name: "양파", quantity: 1, price: 2000, location: "B구역" },
+  //   { id: "2", name: "당근", quantity: 1, price: 1500, location: "B구역" },
+  //   { id: "3", name: "감자", quantity: 2, price: 3000, location: "B구역" },
+  //   { id: "4", name: "돼지고기", quantity: 1, price: 8000, location: "C구역" },
+  //   { id: "5", name: "카레가루", quantity: 1, price: 2500, location: "G구역" },
+  //   { id: "6", name: "우유", quantity: 1, price: 2800, location: "E구역" },
+  // ]);
 
   const discountItems: DiscountItem[] = [
     { id: "1", name: "비비고 김치만두", originalPrice: 8500, discountPrice: 6200, location: "E구역" },
@@ -44,13 +102,10 @@ const MainStore = () => {
   ];
 
   const updateQuantity = (id: string, newQuantity: number) => {
-    if (newQuantity === 0) {
-      setCartItems(cartItems.filter(item => item.id !== id));
-    } else {
-      setCartItems(cartItems.map(item => 
-        item.id === id ? { ...item, quantity: newQuantity } : item
-      ));
-    }
+    if (newQuantity < 1) return; 
+    setCartItems(cartItems.map(item => 
+      item.id === id ? { ...item, quantity: newQuantity } : item
+    ));
   };
 
   const removeItem = (id: string) => {
@@ -79,7 +134,7 @@ const MainStore = () => {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => setActiveTab(undefined)}
+            onClick={() => setActiveTab(undefined)} // 이 부분은 그대로 둡니다.
             className="text-primary-foreground hover:bg-primary/20"
           >
             <Home className="h-5 w-5" />
@@ -88,7 +143,7 @@ const MainStore = () => {
       </div>
 
       {/* Top Tabs and Content Area */}
-      <Tabs key={activeTab === undefined ? 'default' : activeTab} className="w-full" value={activeTab} onValueChange={setActiveTab}>
+      <Tabs className="w-full" value={activeTab} onValueChange={handleTabChange}>
         <TabsList className="grid w-full grid-cols-2 bg-app-green-light rounded-none h-auto">
           <TabsTrigger value="discount" className="py-4 text-lg font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
             % 할인상품
@@ -99,112 +154,131 @@ const MainStore = () => {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="discount" className="p-4 mt-0">
-          <div className="space-y-3">
-            {discountItems.map((item) => (
-              <Card key={item.id} className="p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-lg">{item.name}</h3>
-                    <p className="text-sm text-muted-foreground">{item.location}</p>
-                    <div className="flex items-center gap-2 mt-2">
-                      <span className="text-sm text-muted-foreground line-through">
-                        {item.originalPrice.toLocaleString()}원
-                      </span>
-                      <span className="text-lg font-bold text-destructive">
-                        {item.discountPrice.toLocaleString()}원
-                      </span>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="bg-destructive text-destructive-foreground px-2 py-1 rounded text-sm font-medium">
-                      {Math.round(((item.originalPrice - item.discountPrice) / item.originalPrice) * 100)}% 할인
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </TabsContent>
-
-        <TabsContent value="cart" className="p-4 mt-0">
-          {cartItems.length === 0 ? (
-            <Card className="p-8 text-center">
-              <p className="text-lg text-muted-foreground mb-4">장바구니가 비어있습니다</p>
-              <Button onClick={() => navigate("/store")}>
-                쇼핑 계속하기
-              </Button>
-            </Card>
-          ) : (
-            <>
-              <div className="space-y-3 mb-6">
-                {cartItems.map((item) => (
-                  <Card key={item.id} className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-lg">{item.name}</h3>
-                        <p className="text-sm text-muted-foreground">{item.location}</p>
-                        <p className="text-sm font-medium">
-                          {item.price.toLocaleString()}원
-                        </p>
-                      </div>
-                      
-                      <div className="flex items-center gap-3">
-                        <div className="flex items-center gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                          >
-                            <Minus className="h-4 w-4" />
-                          </Button>
-                          <span className="w-8 text-center font-medium">{item.quantity}</span>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                          >
-                            <Plus className="h-4 w-4" />
-                          </Button>
-                        </div>
-                        
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          onClick={() => removeItem(item.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+        {/* --- 이 부분이 수정됩니다 --- */}
+        {activeTab === "discount" && ( // activeTab이 "discount"일 때만 렌더링
+          <TabsContent value="discount" className="p-4 mt-0">
+            <div className="space-y-3">
+              {discountItems.map((item) => (
+                <Card key={item.id} className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-lg">{item.name}</h3>
+                      <p className="text-sm text-muted-foreground">{item.location}</p>
+                      <div className="flex items-center gap-2 mt-2">
+                        <span className="text-sm text-muted-foreground line-through">
+                          {item.originalPrice.toLocaleString()}원
+                        </span>
+                        <span className="text-lg font-bold text-destructive">
+                          {item.discountPrice.toLocaleString()}원
+                        </span>
                       </div>
                     </div>
-                    
-                    <div className="mt-2 text-right">
-                      <span className="font-semibold text-lg">
-                        {(item.price * item.quantity).toLocaleString()}원
-                      </span>
+                    <div className="text-right">
+                      <div className="bg-destructive text-destructive-foreground px-2 py-1 rounded text-sm font-medium">
+                        {Math.round(((item.originalPrice - item.discountPrice) / item.originalPrice) * 100)}% 할인
+                      </div>
                     </div>
-                  </Card>
-                ))}
-              </div>
-
-              <Card className="p-4 bg-app-green-light">
-                <div className="flex justify-between items-center mb-4">
-                  <span className="text-xl font-bold">총 합계</span>
-                  <span className="text-2xl font-bold text-primary">
-                    {totalPrice.toLocaleString()}원
-                  </span>
-                </div>
-                <div className="text-sm text-muted-foreground mb-4">
-                  총 {cartItems.length}개 상품
-                </div>
-                
-                <Button className="w-full py-4 text-lg">
-                  계산하러 가기
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+        )}
+        
+        {activeTab === "cart" && ( // activeTab이 "cart"일 때만 렌더링
+          <TabsContent value="cart" className="p-4 mt-0">
+            {cartItems.length === 0 ? (
+              <Card className="p-8 text-center">
+                <p className="text-lg text-muted-foreground mb-4">장바구니가 비어있습니다</p>
+                <Button onClick={() => navigate("/store")}>
+                  쇼핑 계속하기
                 </Button>
               </Card>
-            </>
-          )}
-        </TabsContent>
+            ) : (
+              <>
+                <div className="space-y-3 mb-6">
+                  {cartItems.map((item) => (
+                    <Card key={item.id} className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-lg">{item.name}</h3>
+                          <p className="text-sm text-muted-foreground">{item.location}</p>
+                          <p className="text-sm font-medium">
+                            {item.price.toLocaleString()}원
+                          </p>
+                        </div>
+                        
+                        <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                            >
+                              <Minus className="h-4 w-4" />
+                            </Button>
+                            <span className="w-8 text-center font-medium">{item.quantity}</span>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            >
+                              <Plus className="h-4 w-4" />
+                            </Button>
+                          </div>
+                          
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => removeItem(item.id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                      
+                      <div className="mt-2 text-right">
+                        <span className="font-semibold text-lg">
+                          {(item.price * item.quantity).toLocaleString()}원
+                        </span>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+                <Button
+                  variant="outline"
+                  className="w-full mb-4"
+                  onClick={async () => {
+                    try {
+                      await axios.post("http://localhost:3000/product/cart/clear");
+                      setCartItems([]); // 프론트에서도 장바구니 비움
+                    } catch (err) {
+                      console.error("장바구니 초기화 실패", err);
+                    }
+                  }}
+                >
+                  장바구니 비우기
+                </Button>
+                  
+                <Card className="p-4 bg-app-green-light">
+                  <div className="flex justify-between items-center mb-4">
+                    <span className="text-xl font-bold">총 합계</span>
+                    <span className="text-2xl font-bold text-primary">
+                      {totalPrice.toLocaleString()}원
+                    </span>
+                  </div>
+                  <div className="text-sm text-muted-foreground mb-4">
+                    총 {cartItems.length}개 상품
+                  </div>
+                  
+                  <Button className="w-full py-4 text-lg">
+                    계산하러 가기
+                  </Button>
+                </Card>
+              </>
+            )}
+          </TabsContent>
+        )}
 
         {/* Store Map Section - Only shown when no tab is active */}
         {!activeTab && (
@@ -229,28 +303,7 @@ const MainStore = () => {
         )}
       </Tabs>
 
-      {/* Bottom Navigation - Stacked vertically */}
-      {/* <div className="fixed bottom-0 left-0 right-0 bg-primary text-primary-foreground">
-        <div className="space-y-0">
-          <Button
-            onClick={() => navigate("/assistant")}
-            variant="ghost"
-            className="w-full py-4 text-primary-foreground hover:bg-primary/20 rounded-none h-auto flex items-center justify-center gap-2 border-b border-primary-foreground/20"
-          >
-            <Mic className="h-5 w-5" />
-            <span className="text-sm">마트 도우미에게 도움을 요청하세요</span>
-          </Button>
-          <div className="h-0.5 w-full bg-neutral-100" />
-          <Button
-            onClick={() => navigate("/search")}
-            variant="ghost"
-            className="w-full py-4 text-primary-foreground hover:bg-primary/20 rounded-none h-auto flex items-center justify-center gap-2"
-          >
-            <Search className="h-5 w-5" />
-            <span className="text-sm">상품 검색</span>
-          </Button>
-        </div>
-      </div> */}
+      
 
       <div className="fixed bottom-4 left-4 right-4">
           <Button 
@@ -271,6 +324,7 @@ const MainStore = () => {
             상품 검색
           </Button>
       </div> */}
+      
 
       {/* Bottom padding to account for fixed navigation */}
       <div className="h-32"></div>
